@@ -9,9 +9,12 @@ const executableSchema = makeExecutableSchema({
     resolvers: Resolvers
 });
 
-const server = new ApolloServer({
-    schema: executableSchema,
-    context: ({ req }) => req
-});
+export default (utils) => {
+    const server = new ApolloServer({
+        typeDefs: Schema,
+        resolvers: Resolvers.call(utils),
+        context: ({ req }) => req
+    });
 
-export default server;
+    return server;
+};

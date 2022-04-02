@@ -11,6 +11,7 @@
   "author": "hiepbc",
   "license": "ISC",
   "dependencies": {
+    "@apollo/client": "^3.5.10",
     "@graphql-tools/schema": "^8.3.5",
     "apollo-server-express": "^3.6.6",
     "compression": "^1.7.4",
