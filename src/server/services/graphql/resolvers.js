@@ -31,7 +31,7 @@ export default function resolver() {
             posts(root, args, context) {
                 return Post.findAll({
                     order: [
-                        ['ceratedAt', 'DESC']
+                        ['createdAt', 'DESC']
                     ]
                 });
             },
