@@ -20,6 +20,12 @@ export default function resolver() {
             }
         },
         Chat: {
+            lastMessage(chat, args, context) {
+                return chat.getMessages({
+                    limit: 1, order: [['id', 'DESC']] })
+                    .then((message) => { return message[0];
+                });
+            },
             messages(chat, args, context) {
                 return chat.getMessages({ order: [['id', 'ASC']] });
             },
@@ -65,6 +71,26 @@ export default function resolver() {
                         model: Message,
                     }],
                 });
+            },
+            postsFeed(root, { page, limit }, context) {
+                let skip = 0;
+
+                if (page && limit) {
+                    skip = page * limit;
+                }
+
+                const query = {
+                    order: [['createdAt', 'DESC']],
+                    offset: skip,
+                }
+
+                if (limit) {
+                    query.limit = limit;
+                }
+
+                return {
+                    posts: Post.findAll(query)
+                };
             },
         },
         RootMutation: {

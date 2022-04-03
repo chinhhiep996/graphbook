@@ -22,12 +22,18 @@ const typeDefinitions = `
         id: Int
         messages: [Message]
         users: [User]
+        lastMessage: Message
+    }
+
+    type PostFeed {
+        posts: [Post]
     }
 
     type RootQuery {
         posts: [Post]
         chats: [Chat]
         chat(chatId: Int): Chat
+        postsFeed(page: Int, limit: Int): PostFeed
     }
 
     input PostInput {
