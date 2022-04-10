@@ -1,4 +1,8 @@
+import Sequelize from 'sequelize';
+
 import logger from '../../helpers/logger';
+
+const Op = Sequelize.Op;
 
 // export default resolvers;
 export default function resolver() {
@@ -22,9 +26,11 @@ export default function resolver() {
         Chat: {
             lastMessage(chat, args, context) {
                 return chat.getMessages({
-                    limit: 1, order: [['id', 'DESC']] })
-                    .then((message) => { return message[0];
-                });
+                    limit: 1, order: [['id', 'DESC']]
+                })
+                    .then((message) => {
+                        return message[0];
+                    });
             },
             messages(chat, args, context) {
                 return chat.getMessages({ order: [['id', 'ASC']] });
@@ -92,6 +98,33 @@ export default function resolver() {
                     posts: Post.findAll(query)
                 };
             },
+            usersSearch(root, { page, limit, text }, context) {
+                if (text.length < 3) {
+                    return {
+                        users: []
+                    };
+                }
+                let skip = 0;
+                if (page && limit) {
+                    skip = page * limit;
+                }
+                const query = {
+                    order: [['createdAt', 'DESC']],
+                    offset: skip,
+                };
+                if (limit) {
+                    query.limit = limit;
+                }
+                query.where = {
+                    username: {
+                        [Op.like]: '%' + text + '%'
+                    }
+                };
+
+                return {
+                    users: User.findAll(query)
+                };
+            },
         },
         RootMutation: {
             addPost(root, { post }, context) {
@@ -139,6 +172,31 @@ export default function resolver() {
                             });
                             return newMessage;
                         });
+                    });
+                });
+            },
+            deletePost(root, { postId }, context) {
+                return Post.destroy({
+                    where: {
+                        id: postId
+                    }
+                }).then(function (rows) {
+                    if (rows === 1) {
+                        logger.log({
+                            level: 'info',
+                            message: 'Post ' + postId + 'was deleted',
+                        });
+                        return {
+                            success: true
+                        };
+                    }
+                    return {
+                        success: false
+                    };
+                }, function (err) {
+                    logger.log({
+                        level: 'error',
+                        message: err.message,
                     });
                 });
             },
