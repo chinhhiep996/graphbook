@@ -3,6 +3,7 @@ import path from 'path';
 import helmet from 'helmet';
 import cors from 'cors';
 import compress from 'compression';
+import 'dotenv/config'
 
 import servicesLoader from './services';
 import db from './database';
