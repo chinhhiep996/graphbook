@@ -1,8 +1,14 @@
 import Sequelize from 'sequelize';
 import bcrypt from 'bcrypt';
 import JWT from 'jsonwebtoken';
+import { GraphQLUpload } from 'graphql-upload';
+import aws from 'aws-sdk';
 
 import logger from '../../helpers/logger';
+const s3 = new aws.S3({
+    signatureVersion: 'v4',
+    region: 'eu-central-1',
+});
 
 const Op = Sequelize.Op;
 const { JWT_SECRET } = process.env;
@@ -13,6 +19,7 @@ export default function resolver() {
     const { Post, User, Chat, Message } = db.models;
 
     const resolvers = {
+        Upload: GraphQLUpload,
         Post: {
             user(post, args, context) {
                 return post.getUser();
@@ -153,7 +160,7 @@ export default function resolver() {
             signup(root, { email, password, username }, context) {
                 return User.findAll({
                     where: {
-                        [Op.or]: [{email}, {username}]
+                        [Op.or]: [{ email }, { username }]
                     },
                     raw: true,
                 }).then(async (users) => {
@@ -167,7 +174,7 @@ export default function resolver() {
                                 username,
                                 activated: 1,
                             }).then((newUser) => {
-                                const token = JWT.sign({email, id: newUser.id}, JWT_SECRET, {
+                                const token = JWT.sign({ email, id: newUser.id }, JWT_SECRET, {
                                     expiresIn: '1d'
                                 });
 
@@ -249,7 +256,32 @@ export default function resolver() {
                         message: err.message,
                     });
                 });
-            }
+            },
+            async uploadAvatar(root, { file }, context) {
+                const { createReadStream, filename, mimetype, encoding } = await file;
+                const bucket = 'apollo-book';
+                const params = {
+                    Bucket: bucket,
+                    Key: context.user.id + '/' + filename,
+                    ACL: 'public-read',
+                    Body: createReadStream()
+                };
+                const response = await s3.upload(params).promise();
+                
+                return User.update({
+                    avatar: response.Location
+                },
+                    {
+                        where: {
+                            id: context.user.id
+                        }
+                    }).then(() => {
+                        return {
+                            filename: filename,
+                            url: response.Location
+                        }
+                    });
+            },
         },
     };
 

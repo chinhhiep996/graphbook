@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import { withApollo } from '@apollo/client/react/hoc';
+import 'cropperjs/dist/cropper.css';
 
 import Feed from './Feed';
 import Chats from './Chats';

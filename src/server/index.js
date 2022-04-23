@@ -3,7 +3,8 @@ import path from 'path';
 import helmet from 'helmet';
 import cors from 'cors';
 import compress from 'compression';
-import 'dotenv/config'
+import 'dotenv/config';
+import { graphqlUploadExpress } from 'graphql-upload';
 
 import servicesLoader from './services';
 import db from './database';
@@ -43,6 +44,7 @@ for (let i = 0; i < serviceNames.length; i += 1) {
     if (name === 'graphql') {
         (async () => {
             await services[name].start();
+            app.use(graphqlUploadExpress());
             services[name].applyMiddleware({ app });
         })();
     } else {
