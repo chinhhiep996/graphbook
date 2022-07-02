@@ -26,3 +26,5 @@ const UserProfile = ({ username }) => {
         </div>
     );
 }
+
+export default UserProfile;
