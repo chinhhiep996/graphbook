@@ -3,13 +3,11 @@ import { Helmet } from 'react-helmet';
 import { withApollo } from '@apollo/client/react/hoc';
 import 'cropperjs/dist/cropper.css';
 
-import Feed from './Feed';
-import Chats from './Chats';
-import Bar from './components/bar';
 import Loading from './components/loading';
-import LoginRegisterForm from './components/loginregister';
+import LoginRegisterForm from './components/loginRegister';
 import { useCurrentUserQuery } from './apollo/queries/currentUserQuery';
 import Error from './components/error';
+import Router from './router';
 
 import './components/fontawesome';
 import '../../assets/css/style.css';
@@ -48,16 +46,13 @@ const App = ({ client }) => {
         <div className="container">
             <Helmet>
                 <title>Graphbook - Feed</title>
-                <meta name="description" content="Newsfeed of all your friends on Graphbook" />
+                <meta name="description" content="News feed of all your friends on Graphbook" />
             </Helmet>
 
-            {loggedIn && (
-                <div>
-                    <Bar changeLoginState={handleLogin} />
-                    <Feed />
-                    <Chats />
-                </div>
-            )}
+            <Router
+                loggedIn={loggedIn}
+                changeLoginState={handleLogin}
+            />
             {!loggedIn && <LoginRegisterForm changeLoginState={setLoggedIn} />}
             {!loggedIn && error && <Error><p>{error.message}</p></Error>}
         </div>

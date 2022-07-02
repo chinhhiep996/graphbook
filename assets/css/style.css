@@ -295,6 +295,11 @@ form [type=submit] {
     right: 0;
 }
 
+.post .header a > * {
+    display: inline-block;
+    vertical-align: middle;
+}
+
 .dropdown button {
     width: 100%;
     border: none;

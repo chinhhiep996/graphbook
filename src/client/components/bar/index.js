@@ -4,6 +4,7 @@ import UserBar from './user';
 import { UserConsumer } from '../context/user';
 import SearchBar from './search';
 import Logout from './logout';
+import Home from './home';
 
 const Bar = ({ changeLoginState }) => {
     return (
@@ -15,6 +16,7 @@ const Bar = ({ changeLoginState }) => {
                 </UserConsumer>
             </div>
             <div className="buttons">
+                <Home />
                 <Logout changeLoginState={changeLoginState}/>
             </div>
         </div>

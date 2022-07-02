@@ -80,7 +80,7 @@ export default function resolver() {
                     }],
                 });
             },
-            postsFeed(root, { page, limit }, context) {
+            postsFeed(root, { page, limit, username }, context) {
                 let skip = 0;
 
                 if (page && limit) {
@@ -90,6 +90,11 @@ export default function resolver() {
                 const query = {
                     order: [['createdAt', 'DESC']],
                     offset: skip,
+                }
+
+                if (username) {
+                    query.include = [{model: User}];
+                    query.where = { '$User.username$': username };
                 }
 
                 if (limit) {
@@ -130,6 +135,13 @@ export default function resolver() {
             currentUser(root, args, context) {
                 return context.user;
             },
+            user(root, { username }, context) {
+                return User.findOne({
+                    where: {
+                        username: username
+                    }
+                });
+            }
         },
         RootMutation: {
             login(root, { email, password }, context) {

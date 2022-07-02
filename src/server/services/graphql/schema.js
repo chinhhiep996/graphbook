@@ -56,8 +56,9 @@ const typeDefinitions = `
         posts: [Post]
         chats: [Chat]
         chat(chatId: Int): Chat
-        postsFeed(page: Int, limit: Int): PostFeed @auth
-        usersSearch(page: Int, limit: Int, text: String!): UsersSearch
+        postsFeed(page: Int, limit: Int, username: String): PostFeed @auth
+        usersSearch(page: Int, limit: Int, text: String!): UsersSearch,
+        user(username: String!): User !auth
     }
 
     input PostInput {
